@@ -153,6 +153,15 @@
 
 
             },
+            created: function () {
+                if (localStorage.getItem('CV') !== null) {
+                    let datas = JSON.parse(localStorage.getItem('CV'))
+                    for (data in datas) {
+                        this[data] = datas[data]
+                    }
+                }
+
+            },
 
 
 

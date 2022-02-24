@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <title>Créateur de CV</title>
+</head>
+
+<body>
+    <h1>Créateur de CV</h1>
+    <div id="app">
+        <h2>Données Personnelles</h2>
+        <label for="nom">Nom :</label>
+        <input type="text" name="nom" v-model="name">
+        <label for="prenom">Prénom :</label>
+        <input type="text" name="prenom" v-model="surname">
+        <label>Date de naissance</label>
+        <input type="date" v-model="birthday">
+        <label for="adresse">Adresse</label>
+        <input type="text" name="adresse" v-model="adress">
+
+        <p>Avez-vous une voiture ?</p>
+        <input type="radio" id="oui" v-bind:value="true" v-model="voiture" name="voiture">
+        <label for="oui">Oui</label>
+        <input type="radio" id="non" v-bind:value="false" v-model="voiture" name="voiture">
+        <label for="non">Non</label><br>
+
+        <h2>Formation</h2>
+        <label>Ajoutez une formation :</label>
+        <input type="text" id="formation">
+        <p>Du <input type="date" id="debutFormation"> au <input type="date" id="finFormation"></p>
+        <button @click="ajoutFormation()">Ajoutez</button>
+
+        <h2>Expériences Professionnelles</h2>
+        <label>Ajoutez une expérience professionnelle :</label>
+        <input type="text" id="expPro">
+        <p>Du <input type="date" id="debutExpPro"> au <input type="date" id="finExpPro"></p>
+        <button @click="ajoutExpPro()">Ajoutez</button>
+
+        <h2>Compétences</h2>
+        <label>Ajoutez une compétence :</label>
+        <input type="text" id="skill">
+        <button @click="ajoutSkills">Ajoutez</button>
+
+        <h2>Enregistrer le CV</h2>
+        <button @click="saveCv">Enregistrer</button>
+
+        <h2>Supprimer le CV</h2>
+        <button @click="deleteCv">Supprimer</button>
+
+        <h2>Rendu du CV</h2>
+        <hr>
+        <donnees-perso :name="name" :surname="surname" :birthday="birthday" :adress="adress" :voiture="voiture">
+        </donnees-perso>
+        <formation :formations="formations"></formation>
+        <exp-pro :experience="experience"></exp-pro>
+        <skill :skills="skills"></skill>
+
+
+
+    </div>
+
+
+
+    <script>
+        Vue.component('donnees-perso', {
+
+            props: ['name', 'surname', 'birthday', 'adress', 'voiture'],
+            template: `<div>
+                <h2>{{name}} {{surname}}</h2>
+                <p>Age : {{age}} ans</p>
+                <p>Adresse : {{adress}}</p>
+                <p v-if="voiture === true">Véhiculé</p>
+                <p v-else>Non véhiculé</p>
+                </div>`,
+
+            computed: {
+                age: function () {
+                    let today = new Date()
+                    let birthday = new Date(this.birthday)
+                    let diff = today.getTime() - birthday.getTime()
+                    return Math.floor(diff / (1000 * 60 * 60 * 24 * 365.25))
+                }
+            }
+
+
+        })
+
+        Vue.component(
+            'formation', {
+
+                props: ['formations'],
+
+                template: `<div>
+                <h3>Formation</h3>
+
+                <ul>
+                    <li v-for="formation of formations">{{formation.formation}} du {{formation.debutFormation}} au {{formation.finFormation}}</li>
+                </ul>
+                </div>`
+
+            }
+        )
+
+        Vue.component(
+            'exp-pro', {
+
+                props: ['experience'],
+
+                template: `<div>
+                <h3>Expériences Professionnelles</h3>
+
+                <ul>
+                    <li v-for="expPro of experience">{{expPro.expPro}} du {{expPro.debutExpPro}} au {{expPro.finExpPro}}</li>
+                </ul>
+                </div>`
+            }
+        )
+
+        Vue.component(
+            'skill', {
+
+                props: ['skills'],
+
+                template: `<div>
+                <h3>Compétences</h3>
+                <ul>
+                    <li v-for="skill of skills">{{skill}}</li>
+                </ul>
+                </div>
+                `
+            }
+        )
+
+
+        let vm = new Vue({
+            /*Création d'une instance de vue, et passage du code en option*/
+            el: '#app',
+            /*Sélecteur. Même syntaxe que le CSS*/
+            data: {
+                /*Données de l'application*/
+                name: '',
+                surname: '',
+                birthday: '',
+                adress: '',
+                voiture: false,
+                formations: [],
+                experience: [],
+                skills: []
+
+
+            },
+
+
+
+            methods: {
+                ajoutFormation() {
+
+                    let formation = document.getElementById('formation').value
+                    let debutFormation = new Date(document.getElementById('debutFormation').value)
+                    let finFormation = new Date(document.getElementById('finFormation').value)
+
+                    debutFormation = debutFormation.toLocaleDateString('fr-FR', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                    })
+
+                    finFormation = finFormation.toLocaleDateString('fr-FR', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                    })
+
+
+                    this.formations.push({
+                        formation,
+                        debutFormation,
+                        finFormation
+                    })
+
+                    document.getElementById('formation').value = ''
+                    document.getElementById('debutFormation').value = ''
+                    document.getElementById('finFormation').value = ''
+                },
+                ajoutExpPro() {
+                    let expPro = document.getElementById('expPro').value
+                    let debutExpPro = new Date(document.getElementById('debutExpPro').value)
+                    let finExpPro = new Date(document.getElementById('finExpPro').value)
+
+                    debutExpPro = debutExpPro.toLocaleDateString('fr-FR', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                    })
+
+                    finExpPro = finExpPro.toLocaleDateString('fr-FR', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                    })
+
+
+                    this.experience.push({
+                        expPro,
+                        debutExpPro,
+                        finExpPro
+                    })
+
+                    document.getElementById('expPro').value = ''
+                    document.getElementById('debutExpPro').value = ''
+                    document.getElementById('finExpPro').value = ''
+                },
+                ajoutSkills() {
+                    let skill = document.getElementById('skill').value
+
+                    this.skills.push(skill)
+
+                    document.getElementById('skill').value = ''
+
+                },
+                saveCv() {
+
+                    localStorage.setItem('CV', JSON.stringify(this.$data))
+
+                },
+                deleteCv() {
+
+                    localStorage.removeItem('CV');
+
+                }
+            }
+
+        });
+    </script>
+
+</body>
+
+</html>

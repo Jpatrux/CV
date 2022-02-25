@@ -71,7 +71,8 @@
             props: ['name', 'surname', 'birthday', 'adress', 'voiture'],
             template: `<div>
                 <h2>{{name}} {{surname}}</h2>
-                <p>Age : {{age}} ans</p>
+                <p v-if="birthday == '' ">Veuiller renseigner votre date de naissance</p>
+                <p v-else>Age : {{age}} ans</p>
                 <p>Adresse : {{adress}}</p>
                 <p v-if="voiture === true" style="color:green">Véhiculé</p>
                 <p v-else style="color:red">Non véhiculé</p>
